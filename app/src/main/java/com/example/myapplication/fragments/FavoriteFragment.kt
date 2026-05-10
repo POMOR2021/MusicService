@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.myapplication.R
@@ -18,6 +19,7 @@ import com.example.myapplication.adapters.FavoriteAdapter
 import com.example.myapplication.adapters.TrackAdapter
 import com.example.myapplication.databinding.FragmentFavoriteBinding
 import com.example.myapplication.viewModels.TrackViewModel
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.coroutines.launch
 import kotlin.getValue
 
@@ -45,6 +47,7 @@ class FavoriteFragment : Fragment() {
 
         binding.musicRecycler.layoutManager = LinearLayoutManager(requireContext())
         binding.musicRecycler.adapter = adapter
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.favoriteTracks.collect { list ->

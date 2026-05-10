@@ -18,6 +18,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +27,10 @@ import com.example.myapplication.R
 import com.example.myapplication.adapters.TrackAdapter
 import com.example.myapplication.databinding.FragmentHomeBinding
 import com.example.myapplication.models.Track
+import com.example.myapplication.player.PlayerProvider
 import com.example.myapplication.viewModels.TrackViewModel
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
@@ -40,7 +44,9 @@ class HomeFragment : Fragment() {
             uri?.let { safeUri ->
                 val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION
                 requireContext().contentResolver.takePersistableUriPermission(safeUri, takeFlags)
-                processAudio(safeUri)
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    processAudio(safeUri)
+                }
             }
         }
 
@@ -184,7 +190,10 @@ class HomeFragment : Fragment() {
                 durationMs = durationMs
             )
 
-            viewModel.insertTrack(track)
+            viewModel.addNewTrack(track)
+
+            PlayerProvider.getInstance(requireContext()).addTrackToPlaylist(track)
+
 
         } catch (e: Exception) {
             e.printStackTrace()

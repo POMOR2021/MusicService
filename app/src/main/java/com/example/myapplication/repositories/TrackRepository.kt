@@ -2,11 +2,12 @@ package com.example.myapplication.repositories
 
 import com.example.myapplication.dao.TrackDao
 import com.example.myapplication.models.Track
+import kotlinx.coroutines.flow.Flow
 
 class TrackRepository(
     private val trackDao: TrackDao
 ){
-    val allTracks = trackDao.getAllTracks()
+    val allTracks: Flow<List<Track>> = trackDao.getAllTracks()
 
     suspend fun insertTrack(track: Track){
         trackDao.insertTrack(track)

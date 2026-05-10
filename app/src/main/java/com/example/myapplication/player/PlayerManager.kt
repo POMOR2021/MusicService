@@ -55,6 +55,21 @@ class PlayerManager(context: Context) {
     fun getCurrentPosition(): Long {
         return player.currentPosition
     }
+    fun addTrackToPlaylist(track: Track) {
+        val newItem = MediaItem.Builder()
+            .setUri(track.filePath)
+            .setMediaId(track.id.toString())
+            .setMediaMetadata(
+                androidx.media3.common.MediaMetadata.Builder()
+                    .setTitle(track.title)
+                    .setArtist(track.artist)
+                    .build()
+            )
+            .build()
+
+        player.addMediaItem(newItem)
+    }
+
 }
 
 object PlayerProvider {

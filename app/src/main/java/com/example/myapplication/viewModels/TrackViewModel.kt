@@ -21,15 +21,29 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class TrackViewModel(application: Application) : AndroidViewModel(application) {
     private val player = PlayerProvider.getInstance(application.applicationContext)
-    private val repository: TrackRepository
-    val tracks: StateFlow<List<Track>>
-    val favoriteTracks: StateFlow<List<Track>>
+    private val _allTracks = MutableStateFlow<List<Track>>(emptyList())
+    val dao = TrackDatabase.getDatabase(application).trackDao()
+    private val repository = TrackRepository(dao)
+
+    val tracks: StateFlow<List<Track>> = repository.allTracks.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
+    val favoriteTracks = repository.allTrackFavorite.stateIn(
+    scope = viewModelScope,
+    started = SharingStarted.WhileSubscribed(5000),
+    initialValue = emptyList()
+    )
+
     private var mediaController: MediaController? = null
     private var controllerFuture: ListenableFuture<MediaController>? = null
     private val _isPlaying = MutableStateFlow(false)
@@ -41,22 +55,6 @@ class TrackViewModel(application: Application) : AndroidViewModel(application) {
     val currentPosition: StateFlow<Long> = _currentPosition
     private var progressJob: Job? = null
 
-    init {
-        val dao = TrackDatabase.getDatabase(application).trackDao()
-        repository = TrackRepository(dao)
-
-        tracks = repository.allTracks.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-
-        favoriteTracks = repository.allTrackFavorite.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-    }
 
     fun initMediaController(context: Context) {
 
@@ -151,6 +149,12 @@ class TrackViewModel(application: Application) : AndroidViewModel(application) {
 
     fun seekToPreviousMediaItem() {
         mediaController?.seekToPreviousMediaItem()
+    }
+    fun addNewTrack(track: Track) {
+        viewModelScope.launch {
+            repository.insertTrack(track)
+            PlayerProvider.getInstance(getApplication()).addTrackToPlaylist(track)
+        }
     }
 
 }
