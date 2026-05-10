@@ -6,6 +6,7 @@ import android.content.ComponentName
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
@@ -24,10 +25,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-class TrackViewModel(application: Application): AndroidViewModel(application) {
-    private val  player = PlayerProvider.getInstance(application.applicationContext)
+class TrackViewModel(application: Application) : AndroidViewModel(application) {
+    private val player = PlayerProvider.getInstance(application.applicationContext)
     private val repository: TrackRepository
     val tracks: StateFlow<List<Track>>
+    val favoriteTracks: StateFlow<List<Track>>
     private var mediaController: MediaController? = null
     private var controllerFuture: ListenableFuture<MediaController>? = null
     private val _isPlaying = MutableStateFlow(false)
@@ -39,7 +41,7 @@ class TrackViewModel(application: Application): AndroidViewModel(application) {
     val currentPosition: StateFlow<Long> = _currentPosition
     private var progressJob: Job? = null
 
-    init{
+    init {
         val dao = TrackDatabase.getDatabase(application).trackDao()
         repository = TrackRepository(dao)
 
@@ -48,7 +50,14 @@ class TrackViewModel(application: Application): AndroidViewModel(application) {
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+
+        favoriteTracks = repository.allTrackFavorite.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
     }
+
     fun initMediaController(context: Context) {
 
         val sessionToken = SessionToken(
@@ -60,36 +69,41 @@ class TrackViewModel(application: Application): AndroidViewModel(application) {
             MediaController.Builder(context, sessionToken).buildAsync()
 
         controllerFuture?.addListener({
-            val controller = controllerFuture?.get()
+            val controller = controllerFuture?.get() ?: return@addListener
             this.mediaController = controller
 
-            if (controller?.playbackState != Player.STATE_IDLE) {
-                if(controller != null) {
-                    _isPlaying.value = controller.isPlaying
+            controller.addListener(object : Player.Listener {
+                override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
 
-                    val mediaId = controller.currentMediaItem?.mediaId
-                    _currentTrack.value = findTrackByUri(mediaId)
-
-                    if (controller.isPlaying) {
-                        startUpdatingProgress()
-                    }
+                    _currentTrack.value = findTrackByUri(mediaItem?.mediaId)
                 }
-            }
+
+                override fun onIsPlayingChanged(isPlaying: Boolean) {
+                    _isPlaying.value = isPlaying
+                    if (isPlaying) startUpdatingProgress() else progressJob?.cancel()
+                }
+            })
+
+
+            _isPlaying.value = controller.isPlaying
+            _currentTrack.value = findTrackByUri(controller.currentMediaItem?.mediaId)
+            if (controller.isPlaying) startUpdatingProgress()
         }, MoreExecutors.directExecutor())
     }
 
-    fun insertTrack(track: Track){
+    fun insertTrack(track: Track) {
         viewModelScope.launch {
             repository.insertTrack(track)
         }
     }
-    fun deleteTracks(track: Track){
+
+    fun deleteTracks(track: Track) {
         viewModelScope.launch {
             repository.deleteTrack(track)
         }
     }
 
-    fun playTrack(selectedTrack: Track){
+    fun playTrack(selectedTrack: Track) {
         _isPlaying.value = true
         _currentTrack.value = selectedTrack
         val trackList = tracks.value
@@ -98,18 +112,15 @@ class TrackViewModel(application: Application): AndroidViewModel(application) {
         startUpdatingProgress()
     }
 
-    fun togglePlayPause(){
-        var controller= mediaController?: return
-        if (_isPlaying.value) {
-            mediaController?.pause()
-            _isPlaying.value = false
-            progressJob?.cancel()
+    fun togglePlayPause() {
+        val controller = mediaController ?: return
+        if (controller.isPlaying) {
+            controller.pause()
         } else {
-            mediaController?.play()
-            _isPlaying.value = true
-            startUpdatingProgress()
+            controller.play()
         }
     }
+
     fun toggleFavorite(track: Track) {
         viewModelScope.launch {
             val updatedTrack = track.copy(isFavorite = !track.isFavorite)
@@ -131,7 +142,15 @@ class TrackViewModel(application: Application): AndroidViewModel(application) {
     private fun findTrackByUri(uri: String?): Track? {
         if (uri == null)
             return null
-        return tracks.value.find { it.filePath == uri }
+        return tracks.value.find { it.id.toString() == uri }
+    }
+
+    fun seekToNextMediaItem() {
+        mediaController?.seekToNextMediaItem()
+    }
+
+    fun seekToPreviousMediaItem() {
+        mediaController?.seekToPreviousMediaItem()
     }
 
 }

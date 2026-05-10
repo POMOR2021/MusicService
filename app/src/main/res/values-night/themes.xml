@@ -1,19 +1,15 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.MyApplication" parent="Theme.Material3.DayNight.NoActionBar">
-            <!-- Твой основной цвет -->
             <item name="colorPrimary">@color/primaryColor</item>
             <item name="colorOnPrimary">@color/white</item>
 
-            <!-- Это уберет фиолетовый с кнопок и контейнеров -->
             <item name="colorPrimaryContainer">@color/primaryColor</item>
             <item name="colorOnPrimaryContainer">@color/white</item>
 
-            <!-- Это уберет фиолетовые акценты (чекбоксы, радиокнопки) -->
             <item name="colorSecondary">@color/primaryColor</item>
             <item name="colorSecondaryContainer">@color/primaryColor</item>
 
-            <!-- Цвет поверхностей (фон карточек и т.д.) -->
-            <item name="colorSurface">@color/black</item>
+            <item name="colorSurface">#080808</item>
     </style>
 </resources>

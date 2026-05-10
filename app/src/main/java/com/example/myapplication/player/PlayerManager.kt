@@ -7,7 +7,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.myapplication.models.Track
 
-class PlayerManager(private val context: Context) {
+class PlayerManager(context: Context) {
 
     val player = ExoPlayer.Builder(context).build()
 
@@ -54,10 +54,6 @@ class PlayerManager(private val context: Context) {
 
     fun getCurrentPosition(): Long {
         return player.currentPosition
-    }
-
-    fun getDuration(): Long {
-        return if (player.duration < 0) 0 else player.duration
     }
 }
 

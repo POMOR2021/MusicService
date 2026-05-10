@@ -11,7 +11,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -25,14 +27,14 @@ import com.example.myapplication.adapters.TrackAdapter
 import com.example.myapplication.databinding.FragmentHomeBinding
 import com.example.myapplication.models.Track
 import com.example.myapplication.viewModels.TrackViewModel
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
-    private val viewModel: TrackViewModel by viewModels()
+    private val viewModel: TrackViewModel by activityViewModels()
     private lateinit var adapter: TrackAdapter
-    private var isFavorite: Boolean = false
     private val pickAudio =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
             uri?.let { safeUri ->
@@ -73,7 +75,6 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val itemTouchHelper = ItemTouchHelper(swipeHandler)
-
         binding.FAB.setOnClickListener {
             pickAudio.launch(arrayOf("audio/*"))
         }
@@ -107,6 +108,8 @@ class HomeFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.tracks.collect { list ->
                     adapter.submitList(list)
+                    val count = list.size
+                    binding.emptyRecycler.isVisible = count == 0
                 }
             }
         }
@@ -141,6 +144,10 @@ class HomeFragment : Fragment() {
             viewModel.togglePlayPause()
         }
         viewModel.initMediaController(requireContext())
+        binding.miniPlayer.setOnClickListener {
+            val fullPlayer = FullPlayerSheet()
+            fullPlayer.show(parentFragmentManager, "player")
+        }
     }
 
     private fun processAudio(uri: Uri) {

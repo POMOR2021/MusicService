@@ -17,4 +17,6 @@ class TrackRepository(
     suspend fun updateTrack(track: Track){
         trackDao.updateTrack(track)
     }
+
+    val allTrackFavorite = trackDao.getTrackByIsFavorite()
 }

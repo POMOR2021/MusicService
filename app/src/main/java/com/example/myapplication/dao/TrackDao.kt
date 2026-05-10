@@ -13,6 +13,8 @@ interface TrackDao {
     @Query("SELECT * FROM tracks")
     fun getAllTracks() : Flow<List<Track>>
 
+    @Query("SELECT * FROM tracks WHERE isFavorite = true")
+    fun getTrackByIsFavorite() : Flow<List<Track>>
     @Insert
     suspend fun insertTrack(track: Track)
 
@@ -21,5 +23,7 @@ interface TrackDao {
 
     @Update
     suspend fun updateTrack(track: Track)
+
+
 
 }

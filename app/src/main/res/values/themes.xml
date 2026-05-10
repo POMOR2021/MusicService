@@ -1,22 +1,28 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.MyApplication" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Твой основной цвет -->
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorOnPrimary">@color/white</item>
 
-        <!-- Это уберет фиолетовый с кнопок и контейнеров -->
         <item name="colorPrimaryContainer">@color/primaryColor</item>
         <item name="colorOnPrimaryContainer">@color/white</item>
 
-        <!-- Это уберет фиолетовые акценты (чекбоксы, радиокнопки) -->
         <item name="colorSecondary">@color/primaryColor</item>
         <item name="colorSecondaryContainer">@color/primaryColor</item>
 
-        <!-- Цвет поверхностей (фон карточек и т.д.) -->
         <item name="colorSurface">@color/white</item>
     </style>
     <style name="RoundedSquare">
         <item name="cornerSize">12dp</item>
+    </style>
+    <style name="CustomBottomSheetDialogTheme" parent="Theme.Material3.DayNight.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+    </style>
+
+    <style name="CustomBottomSheetStyle" parent="Widget.Material3.BottomSheet">
+        <item name="behavior_skipCollapsed">true</item>
+        <item name="behavior_draggable">true</item>
     </style>
 </resources>
