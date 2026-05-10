@@ -1,0 +1,20 @@
+package com.example.myapplication.repositories
+
+import com.example.myapplication.dao.TrackDao
+import com.example.myapplication.models.Track
+
+class TrackRepository(
+    private val trackDao: TrackDao
+){
+    val allTracks = trackDao.getAllTracks()
+
+    suspend fun insertTrack(track: Track){
+        trackDao.insertTrack(track)
+    }
+    suspend fun deleteTrack(track:Track){
+        trackDao.deleteTrack(track)
+    }
+    suspend fun updateTrack(track: Track){
+        trackDao.updateTrack(track)
+    }
+}
