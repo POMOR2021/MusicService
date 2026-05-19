@@ -9,7 +9,9 @@ import com.example.myapplication.models.Track
 
 class PlayerManager(context: Context) {
 
-    val player = ExoPlayer.Builder(context).build()
+    val player = ExoPlayer.Builder(context)
+        .setHandleAudioBecomingNoisy(true)
+        .build()
 
     var onTrackChanged: ((Int) -> Unit)? = null
 

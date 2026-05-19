@@ -10,6 +10,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
+import androidx.media3.ui.PlayerView
 import com.example.myapplication.db.TrackDatabase
 import com.example.myapplication.models.Track
 import com.example.myapplication.player.MediaService
@@ -31,6 +32,8 @@ class TrackViewModel(application: Application) : AndroidViewModel(application) {
     private val _allTracks = MutableStateFlow<List<Track>>(emptyList())
     val dao = TrackDatabase.getDatabase(application).trackDao()
     private val repository = TrackRepository(dao)
+    private val _duration = MutableStateFlow(0L)
+    val duration: StateFlow<Long> = _duration
 
     val tracks: StateFlow<List<Track>> = repository.allTracks.stateIn(
         scope = viewModelScope,
@@ -39,9 +42,9 @@ class TrackViewModel(application: Application) : AndroidViewModel(application) {
     )
 
     val favoriteTracks = repository.allTrackFavorite.stateIn(
-    scope = viewModelScope,
-    started = SharingStarted.WhileSubscribed(5000),
-    initialValue = emptyList()
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
     )
 
     private var mediaController: MediaController? = null
@@ -54,6 +57,8 @@ class TrackViewModel(application: Application) : AndroidViewModel(application) {
     private val _currentPosition = MutableStateFlow(0L)
     val currentPosition: StateFlow<Long> = _currentPosition
     private var progressJob: Job? = null
+    private val _repeatMode = MutableStateFlow(mediaController?.repeatMode)
+    val repeatMode: StateFlow<Int?> = _repeatMode.asStateFlow()
 
 
     fun initMediaController(context: Context) {
@@ -74,17 +79,29 @@ class TrackViewModel(application: Application) : AndroidViewModel(application) {
                 override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
 
                     _currentTrack.value = findTrackByUri(mediaItem?.mediaId)
+                    updateDuration()
                 }
 
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
                     _isPlaying.value = isPlaying
                     if (isPlaying) startUpdatingProgress() else progressJob?.cancel()
                 }
+
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    if (playbackState == Player.STATE_READY) {
+                        updateDuration()
+                    }
+                }
+
+                override fun onRepeatModeChanged(repeatMode: Int) {
+                    _repeatMode.value = repeatMode
+                }
             })
 
 
             _isPlaying.value = controller.isPlaying
             _currentTrack.value = findTrackByUri(controller.currentMediaItem?.mediaId)
+            updateDuration()
             if (controller.isPlaying) startUpdatingProgress()
         }, MoreExecutors.directExecutor())
     }
@@ -150,11 +167,32 @@ class TrackViewModel(application: Application) : AndroidViewModel(application) {
     fun seekToPreviousMediaItem() {
         mediaController?.seekToPreviousMediaItem()
     }
+
     fun addNewTrack(track: Track) {
         viewModelScope.launch {
             repository.insertTrack(track)
             PlayerProvider.getInstance(getApplication()).addTrackToPlaylist(track)
         }
+    }
+
+    fun seekTo(progress: Long) {
+        mediaController?.seekTo(progress)
+    }
+
+    private fun updateDuration() {
+        val d = mediaController?.duration ?: 0L
+        if (d > 0) {
+            _duration.value = d
+        }
+    }
+
+    fun setRepeatOnTrack() {
+       mediaController?.repeatMode =
+           when(mediaController?.repeatMode){
+               Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ONE
+               Player.REPEAT_MODE_ONE -> Player.REPEAT_MODE_OFF
+               else -> Player.REPEAT_MODE_OFF
+           }
     }
 
 }

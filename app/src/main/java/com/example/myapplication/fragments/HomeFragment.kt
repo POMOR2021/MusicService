@@ -1,24 +1,21 @@
 package com.example.myapplication.fragments
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,12 +23,11 @@ import com.bumptech.glide.Glide
 import com.example.myapplication.R
 import com.example.myapplication.adapters.TrackAdapter
 import com.example.myapplication.databinding.FragmentHomeBinding
+import com.example.myapplication.db.TrackDatabase
 import com.example.myapplication.models.Track
 import com.example.myapplication.player.PlayerProvider
 import com.example.myapplication.viewModels.TrackViewModel
-import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
@@ -42,10 +38,24 @@ class HomeFragment : Fragment() {
     private val pickAudio =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
             uri?.let { safeUri ->
+                val filePath = safeUri.toString()
                 val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION
                 requireContext().contentResolver.takePersistableUriPermission(safeUri, takeFlags)
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                    processAudio(safeUri)
+                    val exists = TrackDatabase.getDatabase(requireContext()).trackDao()
+                        .isSongAlreadyAdded(filePath)
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                        if (exists) {
+                            Toast.makeText(
+                                requireContext(),
+                                "Трек уже был добавлен",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            processAudio(safeUri)
+                        }
+
+                    }
                 }
             }
         }
@@ -156,7 +166,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun processAudio(uri: Uri) {
+    private suspend fun processAudio(uri: Uri) {
 
         val retriever = MediaMetadataRetriever()
 

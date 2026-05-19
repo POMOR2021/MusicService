@@ -18,6 +18,9 @@ class TrackRepository(
     suspend fun updateTrack(track: Track){
         trackDao.updateTrack(track)
     }
+    suspend fun isSongAlreadyAdded(path: String?){
+        trackDao.isSongAlreadyAdded(path)
+    }
 
     val allTrackFavorite = trackDao.getTrackByIsFavorite()
 }

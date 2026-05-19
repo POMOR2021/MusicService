@@ -71,6 +71,7 @@ dependencies {
     implementation("androidx.media3:media3-ui:$media3Version")
     implementation("androidx.media3:media3-session:$media3Version")
 
+
     implementation("jp.wasabeef:recyclerview-animators:4.0.2")
     val nav_version = "2.7.7"
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")

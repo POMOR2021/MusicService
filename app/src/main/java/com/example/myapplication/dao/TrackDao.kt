@@ -24,6 +24,7 @@ interface TrackDao {
     @Update
     suspend fun updateTrack(track: Track)
 
-
+    @Query("SELECT EXISTS(SELECT 1 FROM tracks WHERE filePath = :path LIMIT 1)")
+    suspend fun isSongAlreadyAdded(path: String?): Boolean
 
 }

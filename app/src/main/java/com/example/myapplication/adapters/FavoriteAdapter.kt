@@ -11,6 +11,7 @@ import com.example.myapplication.databinding.ItemTrackBinding
 import com.example.myapplication.models.Track
 
 class FavoriteAdapter(
+    private val onClick: (Track) -> Unit,
     private val onFavoriteClick: (Track) -> Unit
 ) : androidx.recyclerview.widget.ListAdapter<Track, FavoriteAdapter.FavoriteHolder>(DiffCallback) {
 
@@ -41,7 +42,9 @@ class FavoriteAdapter(
             .load(item.coverUri)
             .placeholder(R.drawable.default_album_art)
             .into(holder.binding.albumImage)
-
+        holder.itemView.setOnClickListener {
+            onClick(item)
+        }
         holder.binding.favoriteButton.setOnClickListener {
             onFavoriteClick(item)
         }
