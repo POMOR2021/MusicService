@@ -43,9 +43,6 @@
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="marquee"
-                android:marqueeRepeatLimit="marquee_forever"
-                android:singleLine="true"
                 android:text="Save Your Tears"
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="14sp"
@@ -66,7 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="0dp"
-            android:src="@drawable/icon_favorite_list_is_not_liked" />
+            android:src="@drawable/icon_add_to_playlist" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,7 +8,6 @@ class TrackRepository(
     private val trackDao: TrackDao
 ){
     val allTracks: Flow<List<Track>> = trackDao.getAllTracks()
-
     suspend fun insertTrack(track: Track){
         trackDao.insertTrack(track)
     }
@@ -18,9 +17,5 @@ class TrackRepository(
     suspend fun updateTrack(track: Track){
         trackDao.updateTrack(track)
     }
-    suspend fun isSongAlreadyAdded(path: String?){
-        trackDao.isSongAlreadyAdded(path)
-    }
-
     val allTrackFavorite = trackDao.getTrackByIsFavorite()
 }

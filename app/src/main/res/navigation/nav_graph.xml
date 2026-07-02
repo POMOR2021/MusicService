@@ -3,10 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
     app:startDestination="@id/HomeFragment">
-<fragment
-    android:id="@+id/HomeFragment"
-    android:name="com.example.myapplication.fragments.HomeFragment"/>
-<fragment
-    android:id="@+id/FavoriteFragment"
-    android:name="com.example.myapplication.fragments.FavoriteFragment"/>
+    <fragment
+        android:id="@+id/HomeFragment"
+        android:name="com.example.myapplication.fragments.HomeFragment" />
+    <fragment
+        android:id="@+id/PlayListFragment"
+        android:name="com.example.myapplication.fragments.PlayListFragment">
+        <action
+            android:id="@+id/action_PlayListFragment_to_MakePlayListFragment"
+            app:destination="@id/MakePlayListFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/MakePlayListFragment"
+        android:name="com.example.myapplication.fragments.MakePlayListFragment"/>
+    <fragment
+        android:id="@+id/FavoriteFragment"
+        android:name="com.example.myapplication.fragments.FavoriteFragment" />
 </navigation>

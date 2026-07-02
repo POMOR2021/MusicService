@@ -25,19 +25,19 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
         android:layout_marginTop="24dp"
+        android:layout_marginRight="12dp"
         app:cardCornerRadius="50dp"
-        app:strokeWidth="0dp"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/topView">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/topView"
+        app:strokeWidth="0dp">
 
         <ImageView
             android:id="@+id/full_album_image"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
     </com.google.android.material.card.MaterialCardView>
 
     <TextView
@@ -45,19 +45,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:gravity="center"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
         android:text="Save Your Tears"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:marqueeRepeatLimit="marquee_forever"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        app:layout_constraintTop_toBottomOf="@+id/album_card"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/album_card" />
+
     <TextView
         android:id="@+id/artist"
         android:layout_width="match_parent"
@@ -66,44 +66,46 @@
         android:gravity="center"
         android:text="The Weeknd"
         android:textSize="18sp"
-        app:layout_constraintTop_toBottomOf="@+id/title"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
     <LinearLayout
         android:id="@+id/progress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="22dp"
-        android:layout_marginRight="22dp"
         android:layout_marginTop="22dp"
+        android:layout_marginRight="22dp"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/artist"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/artist">
+
         <SeekBar
             android:id="@+id/progress_bar"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
+
         <TextView
             android:id="@+id/tvProgress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dp"
-            android:text="00:00"/>
+            android:text="00:00" />
     </LinearLayout>
 
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/progress"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="@+id/progress"
-        app:layout_constraintStart_toStartOf="@+id/progress">
+        app:layout_constraintStart_toStartOf="@+id/progress"
+        app:layout_constraintTop_toBottomOf="@+id/progress">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/previous"
@@ -112,32 +114,57 @@
             android:layout_height="wrap_content"
             android:minWidth="0dp"
             app:icon="@drawable/icon_skip_previous"
-            app:iconSize="32dp"/>
+            app:iconSize="32dp" />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/play_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_play"/>
+            android:src="@drawable/icon_play" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/next"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="0dp"
-            app:iconSize="32dp"
-            app:icon="@drawable/icon_skip_next"/>
+            app:icon="@drawable/icon_skip_next"
+            app:iconSize="32dp" />
     </LinearLayout>
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/repeat_button"
-        style="@style/Widget.Material3.Button.TextButton"
-        android:layout_width="wrap_content"
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        app:icon="@drawable/icon_repeat"
-        app:iconSize="24dp"
-        android:layout_margin="8dp"/>
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/repeat_button"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            app:icon="@drawable/icon_repeat"
+            app:iconSize="26dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:rippleColor="@null" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/shuffle_button"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            app:icon="@drawable/icon_shuffle"
+            app:iconSize="26dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:rippleColor="@null" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

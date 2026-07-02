@@ -29,7 +29,6 @@ import kotlinx.coroutines.launch
 
 class TrackViewModel(application: Application) : AndroidViewModel(application) {
     private val player = PlayerProvider.getInstance(application.applicationContext)
-    private val _allTracks = MutableStateFlow<List<Track>>(emptyList())
     val dao = TrackDatabase.getDatabase(application).trackDao()
     private val repository = TrackRepository(dao)
     private val _duration = MutableStateFlow(0L)
@@ -59,6 +58,7 @@ class TrackViewModel(application: Application) : AndroidViewModel(application) {
     private var progressJob: Job? = null
     private val _repeatMode = MutableStateFlow(mediaController?.repeatMode)
     val repeatMode: StateFlow<Int?> = _repeatMode.asStateFlow()
+    var isShuffleMode: Boolean = false
 
 
     fun initMediaController(context: Context) {
@@ -104,12 +104,6 @@ class TrackViewModel(application: Application) : AndroidViewModel(application) {
             updateDuration()
             if (controller.isPlaying) startUpdatingProgress()
         }, MoreExecutors.directExecutor())
-    }
-
-    fun insertTrack(track: Track) {
-        viewModelScope.launch {
-            repository.insertTrack(track)
-        }
     }
 
     fun deleteTracks(track: Track) {
@@ -195,4 +189,14 @@ class TrackViewModel(application: Application) : AndroidViewModel(application) {
            }
     }
 
+    fun mixTracks() {
+        mediaController?.let { controller ->
+            controller.shuffleModeEnabled = !controller.shuffleModeEnabled
+            if(controller.shuffleModeEnabled){
+                isShuffleMode = true
+            }else{
+                isShuffleMode = false
+            }
+        }
+    }
 }

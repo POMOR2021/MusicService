@@ -136,7 +136,7 @@ class HomeFragment : Fragment() {
                     track?.let {
 
                         binding.title.text = it.title
-                        binding.title.setSelected(true)
+                        binding.title.isSelected = true
                         binding.artist.text = it.artist
 
                         Glide.with(requireContext())
@@ -166,7 +166,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private suspend fun processAudio(uri: Uri) {
+    private fun processAudio(uri: Uri) {
 
         val retriever = MediaMetadataRetriever()
 
@@ -250,6 +250,4 @@ class HomeFragment : Fragment() {
 
         return requireContext().filesDir.absolutePath + "/" + fileName
     }
-
-
 }

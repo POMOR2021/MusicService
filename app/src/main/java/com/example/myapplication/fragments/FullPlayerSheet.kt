@@ -1,6 +1,5 @@
 package com.example.myapplication.fragments
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,9 +7,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.SeekBar
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.Player
@@ -29,9 +26,7 @@ class FullPlayerSheet : BottomSheetDialogFragment() {
     private val viewModel: TrackViewModel by activityViewModels()
     private lateinit var binding: FullPlayerSheetBinding
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FullPlayerSheetBinding.inflate(inflater, container, false)
         return binding.root
@@ -45,13 +40,11 @@ class FullPlayerSheet : BottomSheetDialogFragment() {
                     track?.let {
 
                         binding.title.text = it.title
-                        binding.title.setSelected(true)
+                        binding.title.isSelected = true
                         binding.artist.text = it.artist
 
-                        Glide.with(requireContext())
-                            .load(it.coverUri)
-                            .placeholder(R.drawable.default_album_art)
-                            .into(binding.fullAlbumImage)
+                        Glide.with(requireContext()).load(it.coverUri)
+                            .placeholder(R.drawable.default_album_art).into(binding.fullAlbumImage)
 
                     }
 
@@ -87,12 +80,9 @@ class FullPlayerSheet : BottomSheetDialogFragment() {
                 }
             }
         }
-        binding.progressBar.setOnSeekBarChangeListener(object :
-            SeekBar.OnSeekBarChangeListener {
+        binding.progressBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(
-                p0: SeekBar?,
-                p1: Int,
-                p2: Boolean
+                p0: SeekBar?, p1: Int, p2: Boolean
             ) {
                 if (p2) {
                     viewModel.seekTo(p1.toLong())
@@ -114,9 +104,16 @@ class FullPlayerSheet : BottomSheetDialogFragment() {
         binding.next.setOnClickListener {
             viewModel.seekToNextMediaItem()
         }
-
         binding.repeatButton.setOnClickListener {
             viewModel.setRepeatOnTrack()
+        }
+        binding.shuffleButton.setOnClickListener {
+            viewModel.mixTracks()
+            if (viewModel.isShuffleMode) {
+                binding.shuffleButton.setIconResource(R.drawable.icon_shuffle_on)
+            } else {
+                binding.shuffleButton.setIconResource(R.drawable.icon_shuffle)
+            }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.repeatMode.collect { mode ->

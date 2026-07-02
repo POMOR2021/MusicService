@@ -6,6 +6,11 @@
         android:icon="@drawable/icon_home"
         />
     <item
+        android:id="@+id/PlayListFragment"
+        android:title="Плейлисты"
+        android:icon="@drawable/icon_playlist"
+        />
+    <item
         android:id="@+id/FavoriteFragment"
         android:title="Любимое"
         android:icon="@drawable/icon_favorite"

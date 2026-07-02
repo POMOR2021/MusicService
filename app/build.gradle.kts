@@ -5,6 +5,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        create("release_config") {
+            storeFile = file("/Users/konuh/Application/Keys/Dear.jks")
+            storePassword = "191611"
+            keyAlias = "dearkey"
+            keyPassword = "191611"
+        }
+    }
     namespace = "com.example.myapplication"
     compileSdk = 36
 
@@ -25,6 +33,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release_config")
         }
     }
     compileOptions {
