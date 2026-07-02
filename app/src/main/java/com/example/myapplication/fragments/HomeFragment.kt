@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
@@ -163,6 +164,40 @@ class HomeFragment : Fragment() {
         binding.miniPlayer.setOnClickListener {
             val fullPlayer = FullPlayerSheet()
             fullPlayer.show(parentFragmentManager, "player")
+        }
+
+
+        binding.searchClickButton.setOnClickListener {
+            binding.titleMusic.visibility = View.GONE
+            binding.searchClickButton.visibility = View.GONE
+            binding.moreButton.visibility = View.GONE
+
+            binding.searchView.visibility = View.VISIBLE
+            binding.searchView.isIconified = false
+            binding.searchView.requestFocus()
+        }
+
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let { viewModel.searchTracks(it) }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                viewModel.searchTracks(newText.orEmpty())
+                return true
+            }
+        })
+
+        binding.searchView.setOnCloseListener {
+            binding.searchView.visibility = View.GONE
+
+            binding.titleMusic.visibility = View.VISIBLE
+            binding.searchClickButton.visibility = View.VISIBLE
+            binding.moreButton.visibility = View.VISIBLE
+
+            viewModel.searchTracks("")
+            false
         }
     }
 

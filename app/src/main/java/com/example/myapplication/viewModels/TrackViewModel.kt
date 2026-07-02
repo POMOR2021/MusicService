@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -34,11 +35,21 @@ class TrackViewModel(application: Application) : AndroidViewModel(application) {
     private val _duration = MutableStateFlow(0L)
     val duration: StateFlow<Long> = _duration
 
-    val tracks: StateFlow<List<Track>> = repository.allTracks.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+    private val _searchQuery = MutableStateFlow("")
+
+    val tracks: StateFlow<List<Track>> = _searchQuery
+        .flatMapLatest { name ->
+            if (name.isEmpty()) {
+                repository.allTracks
+            } else {
+                repository.findTrackByName(name)
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     val favoriteTracks = repository.allTrackFavorite.stateIn(
         scope = viewModelScope,
@@ -112,6 +123,10 @@ class TrackViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun searchTracks(name: String){
+        _searchQuery.value = name
+    }
+
     fun playTrack(selectedTrack: Track) {
         _isPlaying.value = true
         _currentTrack.value = selectedTrack
@@ -181,12 +196,12 @@ class TrackViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun setRepeatOnTrack() {
-       mediaController?.repeatMode =
-           when(mediaController?.repeatMode){
-               Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ONE
-               Player.REPEAT_MODE_ONE -> Player.REPEAT_MODE_OFF
-               else -> Player.REPEAT_MODE_OFF
-           }
+        mediaController?.repeatMode =
+            when(mediaController?.repeatMode){
+                Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ONE
+                Player.REPEAT_MODE_ONE -> Player.REPEAT_MODE_OFF
+                else -> Player.REPEAT_MODE_OFF
+            }
     }
 
     fun mixTracks() {

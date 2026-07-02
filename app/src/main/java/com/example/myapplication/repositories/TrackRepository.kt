@@ -17,5 +17,10 @@ class TrackRepository(
     suspend fun updateTrack(track: Track){
         trackDao.updateTrack(track)
     }
+
+    fun findTrackByName(name: String): Flow<List<Track>> {
+        return trackDao.findTrackByName(name)
+    }
+
     val allTrackFavorite = trackDao.getTrackByIsFavorite()
 }

@@ -27,4 +27,8 @@ interface TrackDao {
     @Query("SELECT EXISTS(SELECT 1 FROM tracks WHERE filePath = :path LIMIT 1)")
     suspend fun isSongAlreadyAdded(path: String?): Boolean
 
+    @Query("SELECT * FROM tracks WHERE title LIKE '%' || :name || '%'")
+    fun findTrackByName(name: String): Flow<List<Track>>
+
+
 }
